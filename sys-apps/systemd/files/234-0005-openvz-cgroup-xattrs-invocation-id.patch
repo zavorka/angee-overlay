@@ -1,0 +1,80 @@
+diff -uNr a/src/core/cgroup.c b/src/core/cgroup.c
+--- a/src/core/cgroup.c	2017-09-10 05:39:01.018533190 +0200
++++ b/src/core/cgroup.c	2017-09-10 05:40:15.180630662 +0200
+@@ -1379,13 +1379,6 @@
+ 
+         if (sd_id128_is_null(u->invocation_id))
+                 return;
+-
+-        r = cg_set_xattr(SYSTEMD_CGROUP_CONTROLLER, u->cgroup_path,
+-                         "trusted.invocation_id",
+-                         sd_id128_to_string(u->invocation_id, ids), 32,
+-                         0);
+-        if (r < 0)
+-                log_unit_warning_errno(u, r, "Failed to set invocation ID on control group %s, ignoring: %m", u->cgroup_path);
+ }
+ 
+ static bool unit_has_mask_realized(Unit *u, CGroupMask target_mask, CGroupMask enable_mask) {
+diff -uNr a/src/journal/journald-server.c b/src/journal/journald-server.c
+--- a/src/journal/journald-server.c	2017-09-10 05:39:45.979198529 +0200
++++ b/src/journal/journald-server.c	2017-09-10 05:42:53.468972128 +0200
+@@ -714,44 +714,6 @@
+                 server_schedule_sync(s, priority);
+ }
+ 
+-static int get_invocation_id(const char *cgroup_root, const char *slice, const char *unit, char **ret) {
+-        _cleanup_free_ char *escaped = NULL, *slice_path = NULL, *p = NULL;
+-        char *copy, ids[SD_ID128_STRING_MAX];
+-        int r;
+-
+-        /* Read the invocation ID of a unit off a unit. It's stored in the "trusted.invocation_id" extended attribute
+-         * on the cgroup path. */
+-
+-        r = cg_slice_to_path(slice, &slice_path);
+-        if (r < 0)
+-                return r;
+-
+-        escaped = cg_escape(unit);
+-        if (!escaped)
+-                return -ENOMEM;
+-
+-        p = strjoin(cgroup_root, "/", slice_path, "/", escaped);
+-        if (!p)
+-                return -ENOMEM;
+-
+-        r = cg_get_xattr(SYSTEMD_CGROUP_CONTROLLER, p, "trusted.invocation_id", ids, 32);
+-        if (r < 0)
+-                return r;
+-        if (r != 32)
+-                return -EINVAL;
+-        ids[32] = 0;
+-
+-        if (!id128_is_valid(ids))
+-                return -EINVAL;
+-
+-        copy = strdup(ids);
+-        if (!copy)
+-                return -ENOMEM;
+-
+-        *ret = copy;
+-        return 0;
+-}
+-
+ static void dispatch_message_real(
+                 Server *s,
+                 struct iovec *iovec, unsigned n, unsigned m,
+@@ -902,14 +864,6 @@
+                                 IOVEC_SET_STRING(iovec[n++], x);
+                         }
+ 
+-                        if (raw_slice && raw_unit) {
+-                                if (get_invocation_id(s->cgroup_root, raw_slice, raw_unit, &t) >= 0) {
+-                                        x = strjoina("_SYSTEMD_INVOCATION_ID=", t);
+-                                        free(t);
+-                                        IOVEC_SET_STRING(iovec[n++], x);
+-                                }
+-                        }
+-
+                         if (!cgroup)
+                                 free(c);
+                 } else if (unit_id) {

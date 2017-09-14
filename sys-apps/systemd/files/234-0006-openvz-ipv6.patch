@@ -1,0 +1,39 @@
+diff -Nur a/src/network/networkd-link.c b/src/network/networkd-link.c
+--- a/src/network/networkd-link.c	2017-01-12 15:06:29.143646400 +0100
++++ b/src/network/networkd-link.c	2017-01-12 15:05:14.962730955 +0100
+@@ -1695,7 +1695,7 @@
+         r = sd_netlink_message_open_container(req, IFLA_AF_SPEC);
+         if (r < 0)
+                 return log_link_error_errno(link, r, "Could not open IFLA_AF_SPEC container: %m");
+-
++#if 0
+         if (link_ipv6_enabled(link)) {
+                 /* if the kernel lacks ipv6 support setting IFF_UP fails if any ipv6 options are passed */
+                 r = sd_netlink_message_open_container(req, AF_INET6);
+@@ -1730,7 +1730,7 @@
+                 if (r < 0)
+                         return log_link_error_errno(link, r, "Could not close AF_INET6 container: %m");
+         }
+-
++#endif
+         r = sd_netlink_message_close_container(req);
+         if (r < 0)
+                 return log_link_error_errno(link, r, "Could not close IFLA_AF_SPEC container: %m");
+diff -Nur a/src/network/networkd-route.c b/src/network/networkd-route.c
+--- a/src/network/networkd-route.c	2017-01-12 15:06:29.146646355 +0100
++++ b/src/network/networkd-route.c	2017-01-12 15:05:14.964730926 +0100
+@@ -596,11 +596,11 @@
+         r = sd_netlink_message_append_u32(req, RTA_PRIORITY, route->priority);
+         if (r < 0)
+                 return log_error_errno(r, "Could not append RTA_PRIORITY attribute: %m");
+-
++#if 0
+         r = sd_netlink_message_append_u8(req, RTA_PREF, route->pref);
+         if (r < 0)
+                 return log_error_errno(r, "Could not append RTA_PREF attribute: %m");
+-
++#endif
+         r = sd_netlink_message_append_u32(req, RTA_OIF, link->ifindex);
+         if (r < 0)
+                 return log_error_errno(r, "Could not append RTA_OIF attribute: %m");
+

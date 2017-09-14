@@ -1,0 +1,150 @@
+diff -Nur a/meson.build b/meson.build
+--- a/meson.build	2017-09-14 01:58:38.716072926 +0200
++++ b/meson.build	2017-09-14 02:14:30.573961639 +0200
+@@ -50,14 +50,14 @@
+         error('Prefix is not absolute: "@0@"'.format(prefixdir))
+ endif
+ bindir = join_paths(prefixdir, get_option('bindir'))
+-libdir = join_paths(prefixdir, get_option('libdir'))
++libdir = join_paths('/usr/lib64')
+ sysconfdir = join_paths(prefixdir, get_option('sysconfdir'))
+ includedir = join_paths(prefixdir, get_option('includedir'))
+ datadir = join_paths(prefixdir, get_option('datadir'))
+ localstatedir = join_paths('/', get_option('localstatedir'))
+ 
+ rootbindir = join_paths(rootprefixdir, 'bin')
+-rootlibexecdir = join_paths(rootprefixdir, 'lib/systemd')
++rootlibexecdir = join_paths(rootprefixdir, 'lib64/systemd')
+ 
+ rootlibdir = get_option('rootlibdir')
+ if rootlibdir == ''
+@@ -69,7 +69,7 @@
+ pkgconfiglibdir = join_paths(libdir, 'pkgconfig')
+ polkitpolicydir = join_paths(datadir, 'polkit-1/actions')
+ polkitrulesdir = join_paths(datadir, 'polkit-1/rules.d')
+-polkitpkladir = join_paths(localstatedir, 'lib/polkit-1/localauthority/10-vendor.d')
++polkitpkladir = join_paths(localstatedir, 'lib64/polkit-1/localauthority/10-vendor.d')
+ varlogdir = join_paths(localstatedir, 'log')
+ xinitrcdir = join_paths(sysconfdir, 'X11/xinit/xinitrc.d')
+ rpmmacrosdir = get_option('rpmmacrosdir')
+@@ -78,36 +78,36 @@
+ pkgdatadir = join_paths(datadir, 'systemd')
+ environmentdir = join_paths(prefixdir, 'lib/environment.d')
+ pkgsysconfdir = join_paths(sysconfdir, 'systemd')
+-userunitdir = join_paths(prefixdir, 'lib/systemd/user')
+-userpresetdir = join_paths(prefixdir, 'lib/systemd/user-preset')
+-tmpfilesdir = join_paths(prefixdir, 'lib/tmpfiles.d')
+-sysusersdir = join_paths(prefixdir, 'lib/sysusers.d')
+-sysctldir = join_paths(prefixdir, 'lib/sysctl.d')
+-binfmtdir = join_paths(prefixdir, 'lib/binfmt.d')
+-modulesloaddir = join_paths(prefixdir, 'lib/modules-load.d')
+-networkdir = join_paths(rootprefixdir, 'lib/systemd/network')
++userunitdir = join_paths(prefixdir, 'lib64/systemd/user')
++userpresetdir = join_paths(prefixdir, 'lib64/systemd/user-preset')
++tmpfilesdir = join_paths(prefixdir, 'lib64/tmpfiles.d')
++sysusersdir = join_paths(prefixdir, 'lib64/sysusers.d')
++sysctldir = join_paths(prefixdir, 'lib64/sysctl.d')
++binfmtdir = join_paths(prefixdir, 'lib64/binfmt.d')
++modulesloaddir = join_paths(prefixdir, 'lib64/modules-load.d')
++networkdir = join_paths(rootprefixdir, 'lib64/systemd/network')
+ pkgincludedir = join_paths(includedir, 'systemd')
+ systemgeneratordir = join_paths(rootlibexecdir, 'system-generators')
+-usergeneratordir = join_paths(prefixdir, 'lib/systemd/user-generators')
+-systemenvgeneratordir = join_paths(prefixdir, 'lib/systemd/system-environment-generators')
+-userenvgeneratordir = join_paths(prefixdir, 'lib/systemd/user-environment-generators')
++usergeneratordir = join_paths(prefixdir, 'lib64/systemd/user-generators')
++systemenvgeneratordir = join_paths(prefixdir, 'lib64/systemd/system-environment-generators')
++userenvgeneratordir = join_paths(prefixdir, 'lib64/systemd/user-environment-generators')
+ systemshutdowndir = join_paths(rootlibexecdir, 'system-shutdown')
+ systemsleepdir = join_paths(rootlibexecdir, 'system-sleep')
+-systemunitdir = join_paths(rootprefixdir, 'lib/systemd/system')
+-systempresetdir = join_paths(rootprefixdir, 'lib/systemd/system-preset')
++systemunitdir = join_paths(rootprefixdir, 'lib64/systemd/system')
++systempresetdir = join_paths(rootprefixdir, 'lib64/systemd/system-preset')
+ udevlibexecdir = join_paths(rootprefixdir, 'lib/udev')
+ udevhomedir = udevlibexecdir
+ udevrulesdir = join_paths(udevlibexecdir, 'rules.d')
+ udevhwdbdir = join_paths(udevlibexecdir, 'hwdb.d')
+-catalogdir = join_paths(prefixdir, 'lib/systemd/catalog')
++catalogdir = join_paths(prefixdir, 'lib64/systemd/catalog')
+ kernelinstalldir = join_paths(prefixdir, 'lib/kernel/install.d')
+ factorydir = join_paths(datadir, 'factory')
+ docdir = join_paths(datadir, 'doc/systemd')
+-bootlibdir = join_paths(prefixdir, 'lib/systemd/boot/efi')
+-testsdir = join_paths(prefixdir, 'lib/systemd/tests')
+-systemdstatedir = join_paths(localstatedir, 'lib/systemd')
++bootlibdir = join_paths(prefixdir, 'lib/64systemd/boot/efi')
++testsdir = join_paths(prefixdir, 'lib64/systemd/tests')
++systemdstatedir = join_paths(localstatedir, 'lib64/systemd')
+ catalogstatedir = join_paths(systemdstatedir, 'catalog')
+-randomseeddir = join_paths(localstatedir, 'lib/systemd')
++randomseeddir = join_paths(localstatedir, 'lib64/systemd')
+ 
+ dbuspolicydir = get_option('dbuspolicydir')
+ if dbuspolicydir == ''
+diff -Nur a/src/shared/path-lookup.c b/src/shared/path-lookup.c
+--- a/src/shared/path-lookup.c	2017-09-14 01:58:38.769073700 +0200
++++ b/src/shared/path-lookup.c	2017-09-14 02:00:46.638939469 +0200
+@@ -130,10 +130,10 @@
+         };
+ 
+         const char * const data_unit_paths[] = {
+-                "/usr/local/lib/systemd/user",
++                "/usr/local/lib64/systemd/user",
+                 "/usr/local/share/systemd/user",
+                 USER_DATA_UNIT_PATH,
+-                "/usr/lib/systemd/user",
++                "/usr/lib64/systemd/user",
+                 "/usr/share/systemd/user",
+                 NULL
+         };
+@@ -554,11 +554,11 @@
+                                         runtime_config,
+                                         "/run/systemd/system",
+                                         STRV_IFNOTNULL(generator),
+-                                        "/usr/local/lib/systemd/system",
++                                        "/usr/local/lib64/systemd/system",
+                                         SYSTEM_DATA_UNIT_PATH,
+-                                        "/usr/lib/systemd/system",
++                                        "/usr/lib64/systemd/system",
+ #ifdef HAVE_SPLIT_USR
+-                                        "/lib/systemd/system",
++                                        "/lib64/systemd/system",
+ #endif
+                                         STRV_IFNOTNULL(generator_late),
+                                         NULL);
+@@ -579,10 +579,10 @@
+                                         runtime_config,
+                                         "/run/systemd/user",
+                                         STRV_IFNOTNULL(generator),
+-                                        "/usr/local/lib/systemd/user",
++                                        "/usr/local/lib64/systemd/user",
+                                         "/usr/local/share/systemd/user",
+                                         USER_DATA_UNIT_PATH,
+-                                        "/usr/lib/systemd/user",
++                                        "/usr/lib64/systemd/user",
+                                         "/usr/share/systemd/user",
+                                         STRV_IFNOTNULL(generator_late),
+                                         NULL);
+@@ -820,9 +820,9 @@
+         case UNIT_FILE_SYSTEM:
+                 return strv_new("/run/systemd/system-generators",
+                                 "/etc/systemd/system-generators",
+-                                "/usr/local/lib/systemd/system-generators",
+-                                "/usr/lib/systemd/system-generators",
+-                                "/lib/systemd/system-generators",
++                                "/usr/local/lib64/systemd/system-generators",
++                                "/usr/lib64/systemd/system-generators",
++                                "/lib64/systemd/system-generators",
+                                 SYSTEM_GENERATOR_PATH,
+                                 NULL);
+ 
+@@ -830,7 +830,7 @@
+         case UNIT_FILE_USER:
+                 return strv_new("/run/systemd/user-generators",
+                                 "/etc/systemd/user-generators",
+-                                "/usr/local/lib/systemd/user-generators",
++                                "/usr/local/lib64/systemd/user-generators",
+                                 USER_GENERATOR_PATH,
+                                 NULL);
+ 

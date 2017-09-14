@@ -1,0 +1,28 @@
+diff -Nur a/src/core/execute.c b/src/core/execute.c
+--- a/src/core/execute.c	2017-09-14 01:58:38.876075262 +0200
++++ b/src/core/execute.c	2017-09-14 04:17:13.130381958 +0200
+@@ -2623,24 +2623,6 @@
+                 }
+         }
+ 
+-        if (context->private_network && runtime && runtime->netns_storage_socket[0] >= 0) {
+-                r = setup_netns(runtime->netns_storage_socket);
+-                if (r < 0) {
+-                        *exit_status = EXIT_NETWORK;
+-                        return r;
+-                }
+-        }
+-
+-        needs_mount_namespace = exec_needs_mount_namespace(context, params, runtime);
+-        if (needs_mount_namespace) {
+-                r = apply_mount_namespace(unit, command, context, params, runtime);
+-                if (r < 0) {
+-                        *exit_status = EXIT_NAMESPACE;
+-                        return r;
+-                }
+-        }
+-
+-        /* Apply just after mount namespace setup */
+         r = apply_working_directory(context, params, home, needs_mount_namespace, exit_status);
+         if (r < 0)
+                 return r;

@@ -1,0 +1,29 @@
+diff -Nur a/Makefile.am b/Makefile.am
+--- a/Makefile.am	2017-09-10 05:47:26.443008837 +0200
++++ b/Makefile.am	2017-09-10 05:49:06.570489564 +0200
+@@ -3984,14 +3984,6 @@
+ 	$(BLKID_LIBS) \
+ 	$(KMOD_LIBS)
+ 
+-if HAVE_KMOD
+-libudev_core_la_SOURCES += \
+-	src/udev/udev-builtin-kmod.c
+-
+-dist_udevrules_DATA += \
+-	rules/80-drivers.rules
+-endif
+-
+ if HAVE_BLKID
+ libudev_core_la_SOURCES += \
+ 	src/udev/udev-builtin-blkid.c
+diff -Nur a/rules/meson.build b/rules/meson.build
+--- a/rules/meson.build	2017-09-10 05:47:41.834236446 +0200
++++ b/rules/meson.build	2017-09-10 05:48:24.136862035 +0200
+@@ -17,7 +17,6 @@
+         75-net-description.rules
+         75-probe_mtd.rules
+         78-sound-card.rules
+-        80-drivers.rules
+         80-net-setup-link.rules
+ '''.split())
+ 
